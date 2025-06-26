@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'multitable',
+    'onetable_with_pydantic',
 ]
 
 MIDDLEWARE = [
