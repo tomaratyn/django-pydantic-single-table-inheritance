@@ -37,7 +37,9 @@ class IntegrationManager(InheritanceManager):
         """
         Return the queryset for the model.
         """
-        return self.get_unfiltered_queryset().filter(type=self.model.INTEGRATION_ID)
+        if hasattr(self.model, 'INTEGRATION_ID'):
+            return self.get_unfiltered_queryset().filter(type=self.model.INTEGRATION_ID)
+        return self.get_unfiltered_queryset()
 
     def get_unfiltered_queryset(self):
         return super().get_queryset().select_subclasses()
@@ -49,11 +51,11 @@ class IntegrationManager(InheritanceManager):
             raise ValueError(f"Invalid data for Integration A: {e}") from e
         return self.create(
             name=data.name,
-            type=BaseIntegration.Integrations.INTEGRATION_A,
+            type=self.model.INTEGRATION_ID,
             is_active=True,
             start=data.start,
             end=data.end,
-            extra=integration_a_extras.model_dump_json(),
+            extra=integration_a_extras.dict(),
         )
 
 
@@ -85,7 +87,7 @@ class BaseIntegration(TimeFramedModel):
 
     def save(self, *args, **kwargs):
         try:
-            self.SCHEMA.model_validate_json(self.extra)
+            self.SCHEMA.model_validate(self.extra)
         except ValidationError as e:
             raise BadIntegrationExtraException('Bad extra') from e
         else:
@@ -97,7 +99,7 @@ class BaseIntegration(TimeFramedModel):
         """
         if not hasattr(self, '_parsed_extra') or self._parsed_extra is None:
             try:
-                self._parsed_extra = self.SCHEMA.model_validate_json(self.extra)
+                self._parsed_extra = self.SCHEMA.model_validate(self.extra)
             except ValidationError as e:
                 raise BadIntegrationExtraException(f"Invalid extra data: {e}") from e
 
