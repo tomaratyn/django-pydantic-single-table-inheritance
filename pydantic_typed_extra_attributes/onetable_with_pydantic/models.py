@@ -58,6 +58,14 @@ class IntegrationManager(InheritanceManager):
             extra=integration_a_extras.dict(),
         )
 
+    def bulk_create(self, objs, batch_size=None, ignore_conflicts=False):
+        # run schema on the data before bulk create
+        raise NotImplementedError() # not implemented in this example
+
+    def bulk_update(self, objs, fields, batch_size=None):
+        # Not possible without pulling each model from the database.
+        raise NotImplementedError()
+
 
 class BaseIntegration(TimeFramedModel):
     """

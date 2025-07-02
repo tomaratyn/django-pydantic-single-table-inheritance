@@ -43,4 +43,6 @@ but they are not.
 - Requires some custom code to handle the Pydantic models and subclassing.
 - Not very django-like, as it does not use the ORM in the same way.
 - Difficult to query inside the "bin" field.
+- bulk_update / bulk_create need to be modified to use the Pydantic models.
+
 
